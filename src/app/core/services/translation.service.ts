@@ -111,6 +111,7 @@ export class TranslationService {
           keepUp: 'Keep it up!',
           achievements: 'Your Achievements',
           days: 'days',
+          entries: 'entries',
           info: {
              daily: 'Daily Logging',
              dailyDesc: 'Track your weight daily to maintain your streak',
@@ -383,6 +384,7 @@ export class TranslationService {
           keepUp: 'కొనసాగించండి!',
           achievements: 'మీ విజయాలు',
           days: 'రోజులు',
+          entries: 'ఎంట్రీలు',
           info: {
              daily: 'రోజువారీ లాగింగ్',
              dailyDesc: 'స్ట్రీక్‌ను కొనసాగించడానికి ప్రతిరోజూ మీ బరువును ట్రాక్ చేయండి',

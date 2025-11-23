@@ -109,7 +109,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <h3>{{ 'streaks.badges.dataCollector' | translate }}</h3>
             <p>{{ 'streaks.badges.dataCollectorDesc' | translate }}</p>
             <div class="badge-status" *ngIf="totalDaysLogged >= 50">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 50">🔒 {{ totalDaysLogged }}/50 entries</div>
+            <div class="badge-status locked" *ngIf="totalDaysLogged < 50">🔒 {{ totalDaysLogged }}/50 {{ 'streaks.entries' | translate }}</div>
           </div>
 
           <!-- 100-Day Streak -->
@@ -127,7 +127,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
             <h3>{{ 'streaks.badges.dedicated' | translate }}</h3>
             <p>{{ 'streaks.badges.dedicatedDesc' | translate }}</p>
             <div class="badge-status" *ngIf="totalDaysLogged >= 100">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 100">🔒 {{ totalDaysLogged }}/100 entries</div>
+            <div class="badge-status locked" *ngIf="totalDaysLogged < 100">🔒 {{ totalDaysLogged }}/100 {{ 'streaks.entries' | translate }}</div>
           </div>
 
           <!-- 365-Day Streak -->
