@@ -4,109 +4,110 @@ import { StorageService } from '../../core/services/storage.service';
 import { StreakCalculatorService } from './services/streak-calculator.service';
 import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
 import { ToastService } from '../../core/services/toast.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-streaks',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="streaks-container">
       <div class="streaks-header">
-        <h1>🔥 Streaks</h1>
-        <p class="subtitle">Track your consistency and earn badges!</p>
+        <h1>🔥 {{ 'streaks.title' | translate }}</h1>
+        <p class="subtitle">{{ 'streaks.subtitle' | translate }}</p>
       </div>
 
       <div class="streak-display">
         <div class="streak-card" title="Days you've logged weight in a row">
           <div class="fire-icon">🔥</div>
-          <h2>Current Streak</h2>
-          <div class="streak-number">{{ currentStreak }} days</div>
-          <p class="last-checkin" *ngIf="lastLogDate">Last: {{ lastLogDate | date:'MMM d' }}</p>
-          <p class="last-checkin" *ngIf="!lastLogDate">No entries yet</p>
+          <h2>{{ 'streaks.current' | translate }}</h2>
+          <div class="streak-number">{{ currentStreak }} {{ 'streaks.days' | translate }}</div>
+          <p class="last-checkin" *ngIf="lastLogDate">{{ 'streaks.last' | translate }} {{ lastLogDate | date:'MMM d' }}</p>
+          <p class="last-checkin" *ngIf="!lastLogDate">{{ 'streaks.noEntries' | translate }}</p>
         </div>
 
         <div class="streak-card" title="Your longest streak ever">
           <div class="trophy-icon">🏆</div>
-          <h2>Longest Streak</h2>
-          <div class="streak-number">{{ longestStreak }} days</div>
-          <p class="subtitle-text">Your personal best!</p>
+          <h2>{{ 'streaks.longest' | translate }}</h2>
+          <div class="streak-number">{{ longestStreak }} {{ 'streaks.days' | translate }}</div>
+          <p class="subtitle-text">{{ 'streaks.personalBest' | translate }}</p>
         </div>
 
         <div class="streak-card" title="Total days you've tracked your weight">
           <div class="calendar-icon">📅</div>
-          <h2>Total Days Logged</h2>
+          <h2>{{ 'streaks.total' | translate }}</h2>
           <div class="streak-number">{{ totalDaysLogged }}</div>
-          <p class="subtitle-text">Keep it up!</p>
+          <p class="subtitle-text">{{ 'streaks.keepUp' | translate }}</p>
         </div>
       </div>
 
       <!-- Badges Section -->
       <div class="badges-section">
-        <h2>🏆 Your Achievements</h2>
+        <h2>🏆 {{ 'streaks.achievements' | translate }}</h2>
         <div class="badges-grid">
           <!-- Profile Badge -->
           <div class="badge-card" [class.earned]="hasCompleteProfile" [class.locked]="!hasCompleteProfile">
             <div class="badge-icon">📝</div>
-            <h3>Trailblazer</h3>
-            <p>Complete your profile</p>
-            <div class="badge-status" *ngIf="hasCompleteProfile">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="!hasCompleteProfile">🔒 Add name & age</div>
+            <h3>{{ 'streaks.badges.trailblazer' | translate }}</h3>
+            <p>{{ 'streaks.badges.trailblazerDesc' | translate }}</p>
+            <div class="badge-status" *ngIf="hasCompleteProfile">✅ {{ 'streaks.badges.earned' | translate }}</div>
+            <div class="badge-status locked" *ngIf="!hasCompleteProfile">🔒 {{ 'streaks.badges.trailblazerLock' | translate }}</div>
           </div>
 
           <!-- First Entry Badge -->
           <div class="badge-card" [class.earned]="totalDaysLogged >= 1" [class.locked]="totalDaysLogged < 1">
             <div class="badge-icon">🎯</div>
-            <h3>First Step</h3>
-            <p>Log your first weight</p>
-            <div class="badge-status" *ngIf="totalDaysLogged >= 1">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 1">🔒 Start tracking</div>
+            <h3>{{ 'streaks.badges.firstStep' | translate }}</h3>
+            <p>{{ 'streaks.badges.firstStepDesc' | translate }}</p>
+            <div class="badge-status" *ngIf="totalDaysLogged >= 1">✅ {{ 'streaks.badges.earned' | translate }}</div>
+            <div class="badge-status locked" *ngIf="totalDaysLogged < 1">🔒 {{ 'streaks.badges.firstStepLock' | translate }}</div>
           </div>
 
           <!-- 365-Day Streak -->
           <div class="badge-card" [class.earned]="longestStreak >= 365" [class.locked]="longestStreak < 365">
             <div class="badge-icon">🏆</div>
-            <h3>Legend</h3>
-            <p>365-day streak</p>
+            <h3>{{ 'streaks.badges.legend' | translate }}</h3>
+            <p>{{ 'streaks.badges.legendDesc' | translate }}</p>
             <div class="badge-progress" *ngIf="longestStreak < 365">
-              🔒 {{ longestStreak }}/365 days
+              🔒 {{ longestStreak }}/365 {{ 'streaks.days' | translate }}
             </div>
           </div>
 
           <!-- 7-Day Streak -->
           <div class="badge-card" [class.earned]="longestStreak >= 7" [class.locked]="longestStreak < 7">
             <div class="badge-icon">⭐</div>
-            <h3>Weekender</h3>
-            <p>7-day streak</p>
+            <h3>{{ 'streaks.badges.weekender' | translate }}</h3>
+            <p>{{ 'streaks.badges.weekenderDesc' | translate }}</p>
             <div class="badge-progress" *ngIf="longestStreak < 7">
-              🔒 {{ longestStreak }}/7 days
+              🔒 {{ longestStreak }}/7 {{ 'streaks.days' | translate }}
             </div>
           </div>
 
           <!-- 14-Day Streak -->
           <div class="badge-card" [class.earned]="longestStreak >= 14" [class.locked]="longestStreak < 14">
             <div class="badge-icon">💪</div>
-            <h3>Fortnight Fighter</h3>
-            <p>14-day streak</p>
+            <h3>{{ 'streaks.badges.fortnight' | translate }}</h3>
+            <p>{{ 'streaks.badges.fortnightDesc' | translate }}</p>
             <div class="badge-progress" *ngIf="longestStreak < 14">
-              🔒 {{ longestStreak }}/14 days
+              🔒 {{ longestStreak }}/14 {{ 'streaks.days' | translate }}
             </div>
           </div>
 
           <!-- 100-Day Streak -->
           <div class="badge-card" [class.earned]="longestStreak >= 100" [class.locked]="longestStreak < 100">
             <div class="badge-icon">👑</div>
-            <h3>Centurion</h3>
-            <p>100-day streak</p>
+            <h3>{{ 'streaks.badges.centurion' | translate }}</h3>
+            <p>{{ 'streaks.badges.centurionDesc' | translate }}</p>
             <div class="badge-progress" *ngIf="longestStreak < 100">
-              🔒 {{ longestStreak }}/100 days
+              🔒 {{ longestStreak }}/100 {{ 'streaks.days' | translate }}
             </div>
           </div>
 
           <!-- 50 Entries -->
           <div class="badge-card" [class.earned]="totalDaysLogged >= 50" [class.locked]="totalDaysLogged < 50">
             <div class="badge-icon">📊</div>
-            <h3>Data Collector</h3>
-            <p>50 total entries</p>
+            <h3>{{ 'streaks.badges.dataCollector' | translate }}</h3>
+            <p>{{ 'streaks.badges.dataCollectorDesc' | translate }}</p>
             <div class="badge-status" *ngIf="totalDaysLogged >= 50">✅ Earned!</div>
             <div class="badge-status locked" *ngIf="totalDaysLogged < 50">🔒 {{ totalDaysLogged }}/50 entries</div>
           </div>
@@ -114,28 +115,28 @@ import { ToastService } from '../../core/services/toast.service';
           <!-- 100-Day Streak -->
           <div class="badge-card" [class.earned]="currentStreak >= 100" [class.locked]="currentStreak < 100">
             <div class="badge-icon">👑</div>
-            <h3>Centurion</h3>
-            <p>100-day streak</p>
-            <div class="badge-status" *ngIf="currentStreak >= 100">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="currentStreak < 100">🔒 {{ currentStreak }}/100 days</div>
+            <h3>{{ 'streaks.badges.centurion' | translate }}</h3>
+            <p>{{ 'streaks.badges.centurionDesc' | translate }}</p>
+            <div class="badge-status" *ngIf="currentStreak >= 100">✅ {{ 'streaks.badges.earned' | translate }}</div>
+            <div class="badge-status locked" *ngIf="currentStreak < 100">🔒 {{ currentStreak }}/100 {{ 'streaks.days' | translate }}</div>
           </div>
 
           <!-- 100 Entries -->
           <div class="badge-card" [class.earned]="totalDaysLogged >= 100" [class.locked]="totalDaysLogged < 100">
             <div class="badge-icon">🎖️</div>
-            <h3>Dedicated</h3>
-            <p>100 total entries</p>
-            <div class="badge-status" *ngIf="totalDaysLogged >= 100">✅ Earned!</div>
+            <h3>{{ 'streaks.badges.dedicated' | translate }}</h3>
+            <p>{{ 'streaks.badges.dedicatedDesc' | translate }}</p>
+            <div class="badge-status" *ngIf="totalDaysLogged >= 100">✅ {{ 'streaks.badges.earned' | translate }}</div>
             <div class="badge-status locked" *ngIf="totalDaysLogged < 100">🔒 {{ totalDaysLogged }}/100 entries</div>
           </div>
 
           <!-- 365-Day Streak -->
           <div class="badge-card" [class.earned]="currentStreak >= 365" [class.locked]="currentStreak < 365">
             <div class="badge-icon">🏆</div>
-            <h3>Legend</h3>
-            <p>365-day streak</p>
-            <div class="badge-status" *ngIf="currentStreak >= 365">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="currentStreak < 365">🔒 {{ currentStreak }}/365 days</div>
+            <h3>{{ 'streaks.badges.legend' | translate }}</h3>
+            <p>{{ 'streaks.badges.legendDesc' | translate }}</p>
+            <div class="badge-status" *ngIf="currentStreak >= 365">✅ {{ 'streaks.badges.earned' | translate }}</div>
+            <div class="badge-status locked" *ngIf="currentStreak < 365">🔒 {{ currentStreak }}/365 {{ 'streaks.days' | translate }}</div>
           </div>
         </div>
       </div>
@@ -143,18 +144,18 @@ import { ToastService } from '../../core/services/toast.service';
       <div class="info-cards">
         <div class="info-card">
           <div class="card-icon">📅</div>
-          <h3>Daily Logging</h3>
-          <p>Track your weight daily to maintain your streak</p>
+          <h3>{{ 'streaks.info.daily' | translate }}</h3>
+          <p>{{ 'streaks.info.dailyDesc' | translate }}</p>
         </div>
         <div class="info-card">
           <div class="card-icon">🏆</div>
-          <h3>Earn Badges</h3>
-          <p>Unlock achievements for consistency</p>
+          <h3>{{ 'streaks.info.badges' | translate }}</h3>
+          <p>{{ 'streaks.info.badgesDesc' | translate }}</p>
         </div>
         <div class="info-card">
           <div class="card-icon">📊</div>
-          <h3>View Progress</h3>
-          <p>See your streak history in a heatmap</p>
+          <h3>{{ 'streaks.info.progress' | translate }}</h3>
+          <p>{{ 'streaks.info.progressDesc' | translate }}</p>
         </div>
       </div>
     </div>

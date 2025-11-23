@@ -32,6 +32,13 @@ export class TranslationService {
   constructor() {
     this.loadTranslations();
     this.loadSavedLanguage();
+    
+    // Listen for language changes from other MFEs
+    window.addEventListener('fitlog-language-change', (event: any) => {
+      if (event.detail && event.detail !== this.currentLanguage$.value) {
+        this.currentLanguage$.next(event.detail);
+      }
+    });
   }
 
   get currentLanguage() {
@@ -46,6 +53,7 @@ export class TranslationService {
     if (this.supportedLanguages.find(lang => lang.code === languageCode)) {
       this.currentLanguage$.next(languageCode);
       localStorage.setItem('fitlog-language', languageCode);
+      window.dispatchEvent(new CustomEvent('fitlog-language-change', { detail: languageCode }));
     }
   }
 
@@ -90,7 +98,49 @@ export class TranslationService {
   private loadTranslations() {
     this.translations = {
       en: {
-        nav: { home: 'Home', trends: 'Trends' },
+        nav: { home: 'Home', trends: 'Trends', streaks: 'Streaks', weight: 'Weight' },
+        streaks: {
+          title: 'Streaks',
+          subtitle: 'Track your consistency and earn badges!',
+          current: 'Current Streak',
+          longest: 'Longest Streak',
+          total: 'Total Days Logged',
+          last: 'Last:',
+          noEntries: 'No entries yet',
+          personalBest: 'Your personal best!',
+          keepUp: 'Keep it up!',
+          achievements: 'Your Achievements',
+          days: 'days',
+          info: {
+             daily: 'Daily Logging',
+             dailyDesc: 'Track your weight daily to maintain your streak',
+             badges: 'Earn Badges',
+             badgesDesc: 'Unlock achievements for consistency',
+             progress: 'View Progress',
+             progressDesc: 'See your streak history in a heatmap'
+          },
+          badges: {
+             trailblazer: 'Trailblazer',
+             trailblazerDesc: 'Complete your profile',
+             trailblazerLock: 'Add name & age',
+             firstStep: 'First Step',
+             firstStepDesc: 'Log your first weight',
+             firstStepLock: 'Start tracking',
+             legend: 'Legend',
+             legendDesc: '365-day streak',
+             weekender: 'Weekender',
+             weekenderDesc: '7-day streak',
+             fortnight: 'Fortnight Fighter',
+             fortnightDesc: '14-day streak',
+             centurion: 'Centurion',
+             centurionDesc: '100-day streak',
+             dataCollector: 'Data Collector',
+             dataCollectorDesc: '50 total entries',
+             dedicated: 'Dedicated',
+             dedicatedDesc: '100 total entries',
+             earned: 'Earned!'
+          }
+        },
         home: { title: 'Weight Tracker', subtitle: 'Your personal weight tracking assistant.', addEntry: 'Add Entry', noEntries: 'No weight entries yet', getStarted: 'Add your first weight entry to get started!', recentEntries: 'Recent Entries' },
         trends: { title: 'Health Trends', subtitle: 'Track your progress and visualize your fitness journey over time.', weightTrend: 'Weight Trend', bmiTrend: 'BMI Trend', noData: 'No data available for the selected time range.', addEntries: 'Add some weight entries to see your trend!' },
         stats: { average: 'Average', current: 'Current', gained: 'Gained', lost: 'Lost', increased: 'Increased', decreased: 'Decreased', idealRange: 'Ideal Range', status: 'Status', averageBmi: 'Average BMI', currentBmi: 'Current BMI' },
@@ -320,7 +370,49 @@ export class TranslationService {
         pwa: { installTitle: 'FitLog நிறுவவும்', installSubtitle: 'முழு பயன்பாட்டு அனுபவத்தைப் பெறுங்கள்', installButton: 'பயன்பாடு நிறுவவும்' }
       },
       te: {
-        nav: { home: 'హోమ్', trends: 'ట్రెండ్స్' },
+        nav: { home: 'హోమ్', trends: 'ట్రెండ్స్', streaks: 'స్ట్రీక్స్', weight: 'బరువు' },
+        streaks: {
+          title: 'స్ట్రీక్స్',
+          subtitle: 'మీ స్థిరత్వాన్ని ట్రాక్ చేయండి మరియు బ్యాడ్జ్‌లను సంపాదించండి!',
+          current: 'ప్రస్తుత స్ట్రీక్',
+          longest: 'అత్యధిక స్ట్రీక్',
+          total: 'మొత్తం రోజులు',
+          last: 'చివరిసారి:',
+          noEntries: 'ఎంట్రీలు లేవు',
+          personalBest: 'మీ వ్యక్తిగత రికార్డు!',
+          keepUp: 'కొనసాగించండి!',
+          achievements: 'మీ విజయాలు',
+          days: 'రోజులు',
+          info: {
+             daily: 'రోజువారీ లాగింగ్',
+             dailyDesc: 'స్ట్రీక్‌ను కొనసాగించడానికి ప్రతిరోజూ మీ బరువును ట్రాక్ చేయండి',
+             badges: 'బ్యాడ్జ్‌లు సంపాదించండి',
+             badgesDesc: 'స్థిరత్వం కోసం విజయాలను అన్‌లాక్ చేయండి',
+             progress: 'పురోగతి చూడండి',
+             progressDesc: 'హీట్‌మ్యాప్‌లో మీ స్ట్రీక్ చరిత్రను చూడండి'
+          },
+          badges: {
+             trailblazer: 'ట్రైల్‌బ్లేజర్',
+             trailblazerDesc: 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
+             trailblazerLock: 'పేరు & వయస్సు జోడించండి',
+             firstStep: 'మొదటి అడుగు',
+             firstStepDesc: 'మీ మొదటి బరువును లాగ్ చేయండి',
+             firstStepLock: 'ట్రాకింగ్ ప్రారంభించండి',
+             legend: 'లెజెండ్',
+             legendDesc: '365 రోజుల స్ట్రీక్',
+             weekender: 'వీకెండర్',
+             weekenderDesc: '7 రోజుల స్ట్రీక్',
+             fortnight: 'ఫోర్ట్‌నైట్ ఫైటర్',
+             fortnightDesc: '14 రోజుల స్ట్రీక్',
+             centurion: 'సెంచూరియన్',
+             centurionDesc: '100 రోజుల స్ట్రీక్',
+             dataCollector: 'డేటా కలెక్టర్',
+             dataCollectorDesc: '50 మొత్తం ఎంట్రీలు',
+             dedicated: 'అంకితభావం',
+             dedicatedDesc: '100 మొత్తం ఎంట్రీలు',
+             earned: 'సంపాదించారు!'
+          }
+        },
         home: { title: 'బరువు ట్రాకర్', addEntry: 'ఎంట్రీ జోడించండి', noEntries: 'ఇంకా బరువు ఎంట్రీలు లేవు', getStarted: 'ప్రారంభించడానికి మీ మొదటి బరువు ఎంట్రీని జోడించండి!' },
         trends: { title: 'ఆరోగ్య ట్రెండ్స్', subtitle: 'మీ పురోగతిని ట్రాక్ చేయండి మరియు కాలక్రమేణా మీ ఫిట్నెస్ ప్రయాణాన్ని దృశ్యమానం చేయండి।', weightTrend: 'బరువు ట్రెండ్', bmiTrend: 'BMI ట్రెండ్', noData: 'ఎంచుకున్న సమయ పరిధికి డేటా అందుబాటులో లేదు।', addEntries: 'మీ ట్రెండ్ను చూడటానికి కొన్ని బరువు ఎంట్రీలను జోడించండి!' },
         stats: { average: 'సగటు', current: 'ప్రస్తుత', gained: 'పెరిగింది', lost: 'కోల్పోయింది', increased: 'పెరిగింది', decreased: 'తగ్గింది', idealRange: 'ఆదర్శ పరిధి', status: 'స్థితి', averageBmi: 'సగటు BMI', currentBmi: 'ప్రస్తుత BMI' },
