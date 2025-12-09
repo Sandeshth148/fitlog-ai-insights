@@ -1,520 +1,361 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../../core/services/storage.service';
-import { StreakCalculatorService } from './services/streak-calculator.service';
 import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
-import { ToastService } from '../../core/services/toast.service';
-import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 @Component({
-  selector: 'app-streaks',
+  selector: 'app-insights',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule],
   template: `
-    <div class="streaks-container">
-      <div class="streaks-header">
-        <h1>🤖 AI Fitness Insights</h1>
+    <div class="insights-container">
+      <div class="insights-header">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="url(#brainGradient)"/>
+        </svg>
+        <h1 class="gradient-text">AI Fitness Insights</h1>
         <p class="subtitle">Personalized recommendations powered by AI</p>
       </div>
 
-      <div class="streak-display">
-        <div class="streak-card" title="Days you've logged weight in a row">
-          <div class="fire-icon">🔥</div>
-          <h2>{{ 'streaks.current' | translate }}</h2>
-          <div class="streak-number">{{ currentStreak }} {{ 'streaks.days' | translate }}</div>
-          <p class="last-checkin" *ngIf="lastLogDate">{{ 'streaks.last' | translate }} {{ lastLogDate | date:'MMM d' }}</p>
-          <p class="last-checkin" *ngIf="!lastLogDate">{{ 'streaks.noEntries' | translate }}</p>
-        </div>
-
-        <div class="streak-card" title="Your longest streak ever">
-          <div class="trophy-icon">🏆</div>
-          <h2>{{ 'streaks.longest' | translate }}</h2>
-          <div class="streak-number">{{ longestStreak }} {{ 'streaks.days' | translate }}</div>
-          <p class="subtitle-text">{{ 'streaks.personalBest' | translate }}</p>
-        </div>
-
-        <div class="streak-card" title="Total days you've tracked your weight">
-          <div class="calendar-icon">📅</div>
-          <h2>{{ 'streaks.total' | translate }}</h2>
-          <div class="streak-number">{{ totalDaysLogged }}</div>
-          <p class="subtitle-text">{{ 'streaks.keepUp' | translate }}</p>
-        </div>
-      </div>
-
-      <!-- Badges Section -->
-      <div class="badges-section">
-        <h2>🏆 {{ 'streaks.achievements' | translate }}</h2>
-        <div class="badges-grid">
-          <!-- Profile Badge -->
-          <div class="badge-card" [class.earned]="hasCompleteProfile" [class.locked]="!hasCompleteProfile">
-            <div class="badge-icon">📝</div>
-            <h3>{{ 'streaks.badges.trailblazer' | translate }}</h3>
-            <p>{{ 'streaks.badges.trailblazerDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="hasCompleteProfile">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="!hasCompleteProfile">🔒 {{ 'streaks.badges.trailblazerLock' | translate }}</div>
-          </div>
-
-          <!-- First Entry Badge -->
-          <div class="badge-card" [class.earned]="totalDaysLogged >= 1" [class.locked]="totalDaysLogged < 1">
-            <div class="badge-icon">🎯</div>
-            <h3>{{ 'streaks.badges.firstStep' | translate }}</h3>
-            <p>{{ 'streaks.badges.firstStepDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="totalDaysLogged >= 1">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 1">🔒 {{ 'streaks.badges.firstStepLock' | translate }}</div>
-          </div>
-
-          <!-- 365-Day Streak -->
-          <div class="badge-card" [class.earned]="longestStreak >= 365" [class.locked]="longestStreak < 365">
-            <div class="badge-icon">🏆</div>
-            <h3>{{ 'streaks.badges.legend' | translate }}</h3>
-            <p>{{ 'streaks.badges.legendDesc' | translate }}</p>
-            <div class="badge-progress" *ngIf="longestStreak < 365">
-              🔒 {{ longestStreak }}/365 {{ 'streaks.days' | translate }}
-            </div>
-          </div>
-
-          <!-- 7-Day Streak -->
-          <div class="badge-card" [class.earned]="longestStreak >= 7" [class.locked]="longestStreak < 7">
-            <div class="badge-icon">⭐</div>
-            <h3>{{ 'streaks.badges.weekender' | translate }}</h3>
-            <p>{{ 'streaks.badges.weekenderDesc' | translate }}</p>
-            <div class="badge-progress" *ngIf="longestStreak < 7">
-              🔒 {{ longestStreak }}/7 {{ 'streaks.days' | translate }}
-            </div>
-          </div>
-
-          <!-- 14-Day Streak -->
-          <div class="badge-card" [class.earned]="longestStreak >= 14" [class.locked]="longestStreak < 14">
-            <div class="badge-icon">💪</div>
-            <h3>{{ 'streaks.badges.fortnight' | translate }}</h3>
-            <p>{{ 'streaks.badges.fortnightDesc' | translate }}</p>
-            <div class="badge-progress" *ngIf="longestStreak < 14">
-              🔒 {{ longestStreak }}/14 {{ 'streaks.days' | translate }}
-            </div>
-          </div>
-
-          <!-- 100-Day Streak -->
-          <div class="badge-card" [class.earned]="longestStreak >= 100" [class.locked]="longestStreak < 100">
-            <div class="badge-icon">👑</div>
-            <h3>{{ 'streaks.badges.centurion' | translate }}</h3>
-            <p>{{ 'streaks.badges.centurionDesc' | translate }}</p>
-            <div class="badge-progress" *ngIf="longestStreak < 100">
-              🔒 {{ longestStreak }}/100 {{ 'streaks.days' | translate }}
-            </div>
-          </div>
-
-          <!-- 50 Entries -->
-          <div class="badge-card" [class.earned]="totalDaysLogged >= 50" [class.locked]="totalDaysLogged < 50">
-            <div class="badge-icon">📊</div>
-            <h3>{{ 'streaks.badges.dataCollector' | translate }}</h3>
-            <p>{{ 'streaks.badges.dataCollectorDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="totalDaysLogged >= 50">✅ Earned!</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 50">🔒 {{ totalDaysLogged }}/50 {{ 'streaks.entries' | translate }}</div>
-          </div>
-
-          <!-- 100-Day Streak -->
-          <div class="badge-card" [class.earned]="currentStreak >= 100" [class.locked]="currentStreak < 100">
-            <div class="badge-icon">👑</div>
-            <h3>{{ 'streaks.badges.centurion' | translate }}</h3>
-            <p>{{ 'streaks.badges.centurionDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="currentStreak >= 100">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="currentStreak < 100">🔒 {{ currentStreak }}/100 {{ 'streaks.days' | translate }}</div>
-          </div>
-
-          <!-- 100 Entries -->
-          <div class="badge-card" [class.earned]="totalDaysLogged >= 100" [class.locked]="totalDaysLogged < 100">
-            <div class="badge-icon">🎖️</div>
-            <h3>{{ 'streaks.badges.dedicated' | translate }}</h3>
-            <p>{{ 'streaks.badges.dedicatedDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="totalDaysLogged >= 100">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="totalDaysLogged < 100">🔒 {{ totalDaysLogged }}/100 {{ 'streaks.entries' | translate }}</div>
-          </div>
-
-          <!-- 365-Day Streak -->
-          <div class="badge-card" [class.earned]="currentStreak >= 365" [class.locked]="currentStreak < 365">
-            <div class="badge-icon">🏆</div>
-            <h3>{{ 'streaks.badges.legend' | translate }}</h3>
-            <p>{{ 'streaks.badges.legendDesc' | translate }}</p>
-            <div class="badge-status" *ngIf="currentStreak >= 365">✅ {{ 'streaks.badges.earned' | translate }}</div>
-            <div class="badge-status locked" *ngIf="currentStreak < 365">🔒 {{ currentStreak }}/365 {{ 'streaks.days' | translate }}</div>
+      <div class="insights-grid" *ngIf="!loading && insights.length > 0">
+        <div class="insight-card" *ngFor="let insight of insights">
+          <div class="insight-icon" [innerHTML]="insight.icon"></div>
+          <h3>{{ insight.title }}</h3>
+          <p>{{ insight.message }}</p>
+          <div class="insight-footer" *ngIf="insight.action">
+            <span class="insight-action">{{ insight.action }}</span>
           </div>
         </div>
       </div>
 
-      <div class="info-cards">
-        <div class="info-card">
-          <div class="card-icon">📅</div>
-          <h3>{{ 'streaks.info.daily' | translate }}</h3>
-          <p>{{ 'streaks.info.dailyDesc' | translate }}</p>
-        </div>
-        <div class="info-card">
-          <div class="card-icon">🏆</div>
-          <h3>{{ 'streaks.info.badges' | translate }}</h3>
-          <p>{{ 'streaks.info.badgesDesc' | translate }}</p>
-        </div>
-        <div class="info-card">
-          <div class="card-icon">📊</div>
-          <h3>{{ 'streaks.info.progress' | translate }}</h3>
-          <p>{{ 'streaks.info.progressDesc' | translate }}</p>
-        </div>
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Analyzing your fitness data...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!loading && insights.length === 0">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="emptyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" fill="url(#emptyGradient)"/>
+        </svg>
+        <h3>Start Tracking to Get Insights</h3>
+        <p>Log your weight entries to receive personalized AI-powered fitness recommendations</p>
       </div>
     </div>
   `,
   styles: [`
-    .streaks-container {
+    .insights-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
     }
 
-    .streaks-header {
+    .insights-header {
       text-align: center;
       margin-bottom: 3rem;
     }
 
-    .streaks-header h1 {
+    .header-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      display: block;
+    }
+
+    .gradient-text {
       font-size: 2.5rem;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 0.5rem;
-      color: var(--color-text-primary);
+      font-weight: 700;
     }
 
     .subtitle {
+      color: #6b7280;
       font-size: 1.1rem;
-      color: var(--color-text-secondary);
     }
 
-    .streak-display {
+    .insights-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3rem;
-    }
-
-    .streak-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      color: white;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
-    }
-
-    .streak-card:hover {
-      transform: translateY(-4px);
-    }
-
-    .fire-icon, .trophy-icon, .freeze-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-    }
-
-    .streak-card h2 {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-      opacity: 0.9;
-    }
-
-    .streak-number {
-      font-size: 3rem;
-      font-weight: bold;
-      margin: 1rem 0;
-    }
-
-    .last-checkin, .subtitle-text {
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    .streak-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-bottom: 3rem;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 600;
-    }
-
-    .action-btn.primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .action-btn.primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .action-btn.secondary {
-      background: var(--color-surface);
-      color: var(--color-text-primary);
-      border: 2px solid #667eea;
-    }
-
-    .action-btn.secondary:hover:not(:disabled) {
-      background: #667eea;
-      color: white;
-    }
-
-    .action-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .calendar-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    /* Badges Section */
-    .badges-section {
-      margin: 3rem 0;
-    }
-
-    .badges-section h2 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      color: var(--color-text-primary);
-    }
-
-    .badges-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    .badge-card {
-      background: var(--color-surface);
+    .insight-card {
+      background: white;
       border-radius: 12px;
       padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s;
-      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #6366f1;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .badge-card.earned {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    .badge-card.earned .badge-icon {
-      animation: bounce 1s ease-in-out;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .badge-card.locked {
-      opacity: 0.5;
-      filter: grayscale(100%);
-    }
-
-    .badge-card:hover:not(.locked) {
+    .insight-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .badge-icon {
-      font-size: 3rem;
+    .insight-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+    }
+
+    .insight-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .insight-card h3 {
+      font-size: 1.25rem;
+      color: #1f2937;
       margin-bottom: 0.5rem;
     }
 
-    .badge-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
+    .insight-card p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 1rem;
     }
 
-    .badge-card p {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-bottom: 0.5rem;
+    .insight-footer {
+      display: flex;
+      justify-content: flex-end;
     }
 
-    .badge-card.earned p {
-      opacity: 0.9;
-    }
-
-    .badge-status {
+    .insight-action {
+      color: #6366f1;
       font-weight: 600;
-      margin-top: 0.5rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: color 0.2s;
     }
 
-    .badge-status.locked {
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--color-text-secondary);
+    .insight-action:hover {
+      color: #8b5cf6;
     }
 
     .loading-state {
       display: flex;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 3rem;
       gap: 1rem;
-      margin-top: 1rem;
-      color: #667eea;
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #6366f1;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
-    .info-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
+    .loading-state p {
+      color: #6b7280;
+      font-size: 1.1rem;
     }
 
-    .info-card {
-      background: var(--color-surface);
-      padding: 2rem;
-      border-radius: 12px;
+    .empty-state {
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+      padding: 3rem;
     }
 
-    .info-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    .empty-state svg {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      display: block;
     }
 
-    .card-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    .info-card h3 {
-      font-size: 1.3rem;
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: #1f2937;
       margin-bottom: 0.5rem;
-      color: var(--color-text-primary);
     }
 
-    .info-card p {
-      color: var(--color-text-secondary);
-      line-height: 1.6;
+    .empty-state p {
+      color: #6b7280;
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     @media (max-width: 768px) {
-      .streaks-container {
+      .insights-container {
         padding: 1rem;
       }
 
-      .streaks-header h1 {
+      .gradient-text {
         font-size: 2rem;
       }
 
-      .mfe-placeholder {
-        padding: 3rem 1.5rem;
-      }
-
-      .fire-icon {
-        font-size: 4rem;
-      }
-
-      .placeholder-content h2 {
-        font-size: 1.5rem;
-      }
-
-      .info-cards {
+      .insights-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
       }
     }
   `]
 })
 export class StreaksComponent implements OnInit {
-  // Streak data
-  currentStreak = 0;
-  longestStreak = 0;
-  totalDaysLogged = 0;
-  lastLogDate: Date | null = null;
-  hasCompleteProfile = false;
+  insights: any[] = [];
+  loading = true;
 
-  constructor(
-    private storageService: StorageService,
-    private streakCalculator: StreakCalculatorService,
-    private toastService: ToastService
-  ) {}
+  constructor(private storageService: StorageService) {}
 
   async ngOnInit(): Promise<void> {
-    await this.calculateStreaks();
-    await this.checkProfileCompletion();
+    await this.generateInsights();
   }
 
-  /**
-   * Calculate streaks automatically from weight entries
-   */
-  private async calculateStreaks(): Promise<void> {
-    const entries = await this.storageService.getAllEntries();
-    const result = this.streakCalculator.calculateStreak(entries);
+  private async generateInsights(): Promise<void> {
+    this.loading = true;
     
-    this.currentStreak = result.currentStreak;
-    this.longestStreak = result.longestStreak;
-    this.totalDaysLogged = result.totalDaysLogged;
-    this.lastLogDate = result.lastLogDate;
+    try {
+      const entries = await this.storageService.getAllEntries();
+      
+      if (entries.length === 0) {
+        this.insights = [];
+        this.loading = false;
+        return;
+      }
 
-    // Debug: Show entry dates
-    console.log('📊 Streak Calculation Debug:');
-    console.log('Total Entries:', entries.length);
-    console.log('All Entry Dates (with duplicates):', entries.map(e => new Date(e.date).toDateString()));
-    console.log('Unique Dates:', [...new Set(entries.map(e => new Date(e.date).toDateString()))]);
-    console.log('Current Streak:', result.currentStreak);
-    console.log('Longest Streak:', result.longestStreak);
-    console.log('Total Days Logged:', result.totalDaysLogged);
-    console.log('Last Log Date:', result.lastLogDate);
-  }
-
-  /**
-   * Check if user has completed their profile
-   */
-  private async checkProfileCompletion(): Promise<void> {
-    const profile = await this.storageService.getUserProfile();
-    
-    if (profile) {
-      // Profile is complete if has name, age, and avatar
-      this.hasCompleteProfile = !!(
-        profile.name && 
-        profile.name.trim().length > 0 &&
-        profile.age && 
-        profile.age > 0
+      // Sort entries by date
+      const sortedEntries = entries.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
       );
+
+      const latestEntry = sortedEntries[0];
+      const oldestEntry = sortedEntries[sortedEntries.length - 1];
+      
+      // Calculate weight change
+      const weightChange = latestEntry.weightKg - oldestEntry.weightKg;
+      const daysTracking = Math.floor(
+        (new Date(latestEntry.date).getTime() - new Date(oldestEntry.date).getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      // Generate insights
+      this.insights = [];
+
+      // Progress Insight
+      if (weightChange < 0) {
+        this.insights.push({
+          icon: this.getSvgIcon('progress'),
+          title: 'Great Progress!',
+          message: `You've lost ${Math.abs(weightChange).toFixed(1)} kg in ${daysTracking} days. Keep up the excellent work!`,
+          action: 'Continue tracking'
+        });
+      } else if (weightChange > 0) {
+        this.insights.push({
+          icon: this.getSvgIcon('warning'),
+          title: 'Weight Increase Detected',
+          message: `Your weight has increased by ${weightChange.toFixed(1)} kg. Consider reviewing your diet and exercise routine.`,
+          action: 'Review plan'
+        });
+      } else {
+        this.insights.push({
+          icon: this.getSvgIcon('stable'),
+          title: 'Weight Stable',
+          message: `Your weight has remained stable at ${latestEntry.weightKg} kg. Great for maintenance!`,
+          action: 'Keep it up'
+        });
+      }
+
+      // Consistency Insight
+      if (entries.length >= 7) {
+        this.insights.push({
+          icon: this.getSvgIcon('consistency'),
+          title: 'Consistent Tracking',
+          message: `You have ${entries.length} weight entries logged. Consistency is key to success!`,
+          action: 'View trends'
+        });
+      }
+
+      // Recommendation Insight
+      if (weightChange < 0 && daysTracking > 0) {
+        const avgWeeklyLoss = (Math.abs(weightChange) / daysTracking) * 7;
+        if (avgWeeklyLoss > 1) {
+          this.insights.push({
+            icon: this.getSvgIcon('recommendation'),
+            title: 'Slow Down',
+            message: `You're losing ${avgWeeklyLoss.toFixed(1)} kg/week. Aim for 0.5-1 kg/week for sustainable results.`,
+            action: 'Adjust plan'
+          });
+        } else {
+          this.insights.push({
+            icon: this.getSvgIcon('recommendation'),
+            title: 'Perfect Pace',
+            message: `You're losing ${avgWeeklyLoss.toFixed(1)} kg/week. This is a healthy and sustainable rate!`,
+            action: 'Keep going'
+          });
+        }
+      }
+
+      this.loading = false;
+    } catch (error) {
+      console.error('Error generating insights:', error);
+      this.loading = false;
     }
+  }
+
+  private getSvgIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      progress: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+        </linearGradient></defs>
+        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="url(#progressGradient)"/>
+      </svg>`,
+      warning: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="warningGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+        </linearGradient></defs>
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" fill="url(#warningGradient)"/>
+      </svg>`,
+      stable: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="stableGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+        </linearGradient></defs>
+        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" fill="url(#stableGradient)"/>
+      </svg>`,
+      consistency: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="consistencyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+        </linearGradient></defs>
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="url(#consistencyGradient)"/>
+      </svg>`,
+      recommendation: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="recommendationGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#ec4899;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#db2777;stop-opacity:1" />
+        </linearGradient></defs>
+        <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" fill="url(#recommendationGradient)"/>
+      </svg>`
+    };
+    return icons[type] || icons['recommendation'];
   }
 }
