@@ -2,7 +2,7 @@ const { withNativeFederation, shareAll } = require('@angular-architects/native-f
 
 module.exports = withNativeFederation({
 
-  name: 'fitlog-streaks',
+  name: 'fitlog-ai-insights',
 
   exposes: {
     './Component': './src/app/features/streaks/streaks.component.ts',

@@ -13,8 +13,8 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
   template: `
     <div class="streaks-container">
       <div class="streaks-header">
-        <h1>🔥 {{ 'streaks.title' | translate }}</h1>
-        <p class="subtitle">{{ 'streaks.subtitle' | translate }}</p>
+        <h1>🤖 AI Fitness Insights</h1>
+        <p class="subtitle">Personalized recommendations powered by AI</p>
       </div>
 
       <div class="streak-display">
