@@ -4,9 +4,9 @@ import { StreaksComponent } from './features/streaks/streaks.component';
 @Component({
   selector: 'app-root',
   imports: [StreaksComponent],
-  template: '<app-streaks></app-streaks>',
+  template: '<app-insights></app-insights>',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'fitlog-streaks';
+  title = 'fitlog-ai-insights';
 }

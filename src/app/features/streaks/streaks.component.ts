@@ -19,8 +19,8 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
           </defs>
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="url(#brainGradient)"/>
         </svg>
-        <h1 class="gradient-text">AI Fitness Insights</h1>
-        <p class="subtitle">Personalized recommendations powered by AI</p>
+        <h1 class="gradient-text">AI Fitness Insights 1 2 3 TEST</h1>
+        <p class="subtitle">THIS IS THE NEW AI INSIGHTS COMPONENT - NOT STREAKS!</p>
       </div>
 
       <div class="insights-grid" *ngIf="!loading && insights.length > 0">
