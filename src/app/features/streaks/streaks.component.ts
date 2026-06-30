@@ -60,61 +60,70 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
     .insights-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 2.5rem 1.5rem;
     }
 
     .insights-header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
     }
 
     .header-icon {
       width: 64px;
       height: 64px;
-      margin: 0 auto 1rem;
+      margin: 0 auto 1.25rem;
       display: block;
+      filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
     }
 
     .gradient-text {
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      font-size: 3rem;
+      background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
       margin-bottom: 0.5rem;
-      font-weight: 700;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
     }
 
     .subtitle {
-      color: #6b7280;
-      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      font-size: 1.25rem;
     }
 
     .insights-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
     }
 
     .insight-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border-left: 4px solid #6366f1;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--color-surface);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 2rem 1.75rem;
+      box-shadow: var(--glass-shadow);
+      border-left: 5px solid var(--color-primary) !important;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
     .insight-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      border-color: rgba(var(--color-primary-rgb), 0.3);
     }
 
     .insight-icon {
       width: 48px;
       height: 48px;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.05));
     }
 
     .insight-icon svg {
@@ -123,15 +132,18 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
     }
 
     .insight-card h3 {
-      font-size: 1.25rem;
-      color: #1f2937;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
       margin-bottom: 0.5rem;
+      font-family: 'Outfit', sans-serif;
     }
 
     .insight-card p {
-      color: #6b7280;
+      color: var(--color-text-secondary);
       line-height: 1.6;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
     }
 
     .insight-footer {
@@ -140,15 +152,18 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
     }
 
     .insight-action {
-      color: #6366f1;
-      font-weight: 600;
+      color: var(--color-primary);
+      font-weight: 700;
       font-size: 0.9rem;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .insight-action:hover {
-      color: #8b5cf6;
+      color: var(--color-accent);
+      transform: translateX(2px);
     }
 
     .loading-state {
@@ -156,15 +171,23 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
-      gap: 1rem;
+      padding: 4rem 2rem;
+      gap: 1.25rem;
+      background: var(--color-surface);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow);
+      max-width: 600px;
+      margin: 2rem auto;
     }
 
     .spinner {
       width: 50px;
       height: 50px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #6366f1;
+      border: 4px solid rgba(var(--color-primary-rgb), 0.1);
+      border-top-color: var(--color-primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -174,42 +197,56 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
     }
 
     .loading-state p {
-      color: #6b7280;
+      color: var(--color-text-secondary);
       font-size: 1.1rem;
+      margin: 0;
+      font-weight: 500;
     }
 
     .empty-state {
       text-align: center;
-      padding: 3rem;
+      padding: 4rem 2rem;
+      background: var(--color-surface);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: var(--glass-shadow);
+      max-width: 600px;
+      margin: 2rem auto;
     }
 
     .empty-state svg {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       margin: 0 auto 1.5rem;
       display: block;
+      filter: drop-shadow(0 4px 10px rgba(99, 102, 241, 0.2));
     }
 
     .empty-state h3 {
       font-size: 1.5rem;
-      color: #1f2937;
+      color: var(--color-text-primary);
       margin-bottom: 0.5rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
     }
 
     .empty-state p {
-      color: #6b7280;
-      font-size: 1.1rem;
-      max-width: 500px;
+      color: var(--color-text-secondary);
+      font-size: 1.05rem;
+      max-width: 440px;
       margin: 0 auto;
+      line-height: 1.55;
     }
 
     @media (max-width: 768px) {
       .insights-container {
-        padding: 1rem;
+        padding: 1.5rem 1rem;
       }
 
       .gradient-text {
-        font-size: 2rem;
+        font-size: 2.25rem;
       }
 
       .insights-grid {
