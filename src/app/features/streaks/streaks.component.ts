@@ -10,14 +10,16 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
   template: `
     <div class="insights-container">
       <div class="insights-header">
-        <svg class="header-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="url(#brainGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
               <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
             </linearGradient>
           </defs>
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="url(#brainGradient)"/>
+          <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+          <path d="M5.636 5.636l2.828 2.828M15.536 15.536l2.828 2.828M5.636 18.364l2.828-2.828M15.536 8.464l2.828-2.828" />
+          <path d="M12 9c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z" fill="url(#brainGradient)" stroke="none" />
         </svg>
         <h1 class="gradient-text">AI Fitness Insights</h1>
         <p class="subtitle">Personalized recommendations powered by AI</p>
@@ -60,51 +62,55 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
     .insights-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem;
+      padding: 1rem 1.5rem;
     }
 
     .insights-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      margin-bottom: 3.5rem;
+      margin-bottom: 1.5rem;
     }
 
     .header-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.25rem;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.5rem;
       display: block;
       filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
     }
 
     .gradient-text {
-      font-size: 3rem;
+      font-size: 2.25rem;
       background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       font-weight: 800;
       font-family: 'Outfit', sans-serif;
     }
 
     .subtitle {
       color: var(--color-text-secondary);
-      font-size: 1.25rem;
+      font-size: 1rem;
     }
 
     .insights-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 1.5rem;
-      margin-bottom: 2.5rem;
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
     }
 
     .insight-card {
-      background: var(--color-surface);
+      background: var(--color-card-bg, var(--color-surface));
       backdrop-filter: blur(var(--glass-blur)) saturate(180%);
       -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-      border: 1px solid var(--glass-border);
+      border: 1px solid var(--color-card-border, var(--glass-border));
       border-radius: 18px;
-      padding: 2rem 1.75rem;
+      padding: 1.25rem 1.5rem;
       box-shadow: var(--glass-shadow);
       border-left: 5px solid var(--color-primary) !important;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
@@ -148,22 +154,28 @@ import { WeightEntry } from '../weight-tracker/models/weight-entry.model';
 
     .insight-footer {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
     }
 
     .insight-action {
-      color: var(--color-primary);
+      color: #ffffff;
+      background: var(--gradient-primary);
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.825rem;
       cursor: pointer;
+      display: inline-block;
       transition: all 0.25s ease;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.2);
     }
-
+    
     .insight-action:hover {
-      color: var(--color-accent);
-      transform: translateX(2px);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(var(--color-primary-rgb), 0.3);
+      color: #ffffff;
     }
 
     .loading-state {
